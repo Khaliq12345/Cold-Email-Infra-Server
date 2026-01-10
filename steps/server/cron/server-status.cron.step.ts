@@ -7,7 +7,7 @@ export const config: CronConfig = {
   type: "cron",
   name: "checkStatus",
   description: "Check the status of a server and update it if it is ready",
-  cron: "* * * * */3",
+  cron: "0 */3 * * *",
   emits: [],
   flows: ["ServerManagement"],
 };

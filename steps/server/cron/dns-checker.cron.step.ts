@@ -7,7 +7,7 @@ export const config: CronConfig = {
   name: "checkDomainDns",
   description:
     "Check the status of a domain dns and start the advance dns setup",
-  cron: "* * * * */3", // Fixed: This runs every 10 minutes
+  cron: "0 */3 * * *", // Fixed: This runs every 10 minutes
   emits: [],
   flows: ["ServerManagement"],
 };
