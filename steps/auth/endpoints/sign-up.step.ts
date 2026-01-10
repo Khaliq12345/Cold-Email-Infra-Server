@@ -36,6 +36,11 @@ export const handler: Handlers["Signup"] = async (req, { emit, logger }) => {
     const { data, error } = await supabase.auth.signUp({
       email: body.email,
       password: body.password,
+      options: {
+        data: {
+          username: body.email.split("@")[0],
+        },
+      },
     });
     if (error) {
       return {
