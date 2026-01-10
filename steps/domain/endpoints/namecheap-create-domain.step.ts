@@ -39,7 +39,7 @@ export const config: ApiRouteConfig = {
   name: "NamecheapCreateDomain",
   type: "api",
   description: "Endpoint to create a domain via Namecheap",
-  flows: ["NameCheapDomainManagement"],
+  flows: ["DomainManagement"],
   path: "/namecheap/domains/create/:username",
   emits: [],
   method: "POST",
