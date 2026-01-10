@@ -15,7 +15,7 @@ export const config: CronConfig = {
 export const handler: Handlers["checkDomainDns"] = async ({ logger }) => {
   try {
     const { error, data } = await supabase
-      .from("dns")
+      .from("domains")
       .select("*")
       .eq("basic_dns", true); // Use .eq for boolean checks usually
 
@@ -38,7 +38,7 @@ export const handler: Handlers["checkDomainDns"] = async ({ logger }) => {
         );
 
         // Example: Update Supabase if the DNS is verified
-        // await supabase.from("dns").update({ verified: true }).eq("id", row.id);
+        // await supabase.from("domains").update({ verified: true }).eq("id", row.id);
       } catch (dnsError: any) {
         logger.error(
           `DNS lookup failed for ${row.domain}: ${dnsError.message}`,

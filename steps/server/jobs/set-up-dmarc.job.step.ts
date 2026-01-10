@@ -33,7 +33,7 @@ export const handler: Handlers["ConfigureDMARCJob"] = async (
   logger.info("DONE CONFIGURING DMARC; UPDATING THE DATABASE");
 
   const { data, error } = await supabase
-    .from("dns")
+    .from("domains")
     .update({
       dmarc: true,
     })

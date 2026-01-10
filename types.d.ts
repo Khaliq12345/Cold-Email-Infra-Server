@@ -39,6 +39,9 @@ declare module 'motia' {
     'GetMailcowDKIMJob': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'CreateMailcowDomain': ApiRouteHandler<Record<string, unknown>, unknown, { topic: 'create.mailcow.domain'; data: never }>
     'CreateMailboxes': ApiRouteHandler<{ domain: string; count: number }, unknown, { topic: 'create.mailboxes'; data: never }>
+    'QueryDomain': ApiRouteHandler<Record<string, unknown>, unknown, never>
+    'QueryDomainStatus': ApiRouteHandler<Record<string, unknown>, unknown, never>
+    'NamecheapCreateDomain': ApiRouteHandler<{ domainName: string; years: unknown; registrant: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; admin: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; tech: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; auxBilling: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; addFreeWhoisguard?: boolean; wgEnabled?: boolean; isPremiumDomain?: boolean; premiumPrice?: number; eapFee?: number }, unknown, never>
     'Tester': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'Signup': ApiRouteHandler<{ firstname: string; lastname: string; email: string; password: string }, unknown, never>
     'Login': ApiRouteHandler<{ email: string; password: string }, unknown, never>

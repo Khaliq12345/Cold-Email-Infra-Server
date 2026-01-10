@@ -19,7 +19,7 @@ export const handler: Handlers["checkDmarcStatus"] = async ({
     const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
     logger.info(`10 minutes ago - ${tenMinutesAgo}`);
     const { error, data } = await supabase
-      .from("dns")
+      .from("domains")
       .select("*")
       .is("dmarc", false)
       .lte("dkim_set_date", tenMinutesAgo);

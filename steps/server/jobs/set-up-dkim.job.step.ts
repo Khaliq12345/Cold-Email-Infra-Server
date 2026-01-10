@@ -53,7 +53,7 @@ export const handler: Handlers["ConfigureDKIMJob"] = async (
   logger.info("DONE CONFIGURING DKIM; UPDATING THE DATABASE");
 
   const { data, error } = await supabase
-    .from("dns")
+    .from("domains")
     .update({
       dkim: true,
       dkim_set_date: new Date().toISOString(),

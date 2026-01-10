@@ -34,7 +34,7 @@ export const handler: Handlers["ConfigurePtrJob"] = async (
   logger.info("DONE CONFIGURING PTR; UPDATING THE DATABASE");
 
   const { data, error } = await supabase
-    .from("dns")
+    .from("domains")
     .update({
       ptr: true,
     })

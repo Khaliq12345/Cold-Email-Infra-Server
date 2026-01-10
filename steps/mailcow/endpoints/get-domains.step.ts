@@ -17,7 +17,7 @@ export const handler: Handlers["GetDomains"] = async (req, { logger }) => {
   const { username } = req.pathParams;
   try {
     const { data, error } = await supabase
-      .from("dns")
+      .from("domains")
       .select("*")
       .eq("username", username);
     return { status: 200, body: data };
