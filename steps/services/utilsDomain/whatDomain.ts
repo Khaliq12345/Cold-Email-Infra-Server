@@ -1,24 +1,45 @@
 import axios from "axios";
 
-export const WhatDomainsInstance = () => {
+export const NamecheapAPIInstance = () => {
   return axios.create({
-    baseURL: "https://what.domains",
+    baseURL: "https://domains.revved.com",
     headers: {
-      accept: "*/*",
+      accept: "application/json, text/plain, */*",
       "accept-language": "en-US,en;q=0.9",
-      "content-type": "application/x-www-form-urlencoded",
-      origin: "https://dnschecker.org",
+      origin: "https://www.namecheap.com",
       priority: "u=1, i",
-      referer: "https://dnschecker.org/",
+      referer: "https://www.namecheap.com/",
       "sec-ch-ua": '"Chromium";v="143", "Not A(Brand";v="24"',
       "sec-ch-ua-mobile": "?0",
       "sec-ch-ua-platform": '"Linux"',
       "sec-fetch-dest": "empty",
       "sec-fetch-mode": "cors",
       "sec-fetch-site": "cross-site",
-      "sec-fetch-storage-access": "none",
       "user-agent":
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+    },
+  });
+};
+
+export const SquareSpaceDomainsInstance = () => {
+  return axios.create({
+    baseURL: "https://domains.squarespace.com",
+    headers: {
+      accept: "application/json, text/plain, */*",
+      "accept-language": "en-US,en;q=0.9",
+      priority: "u=1, i",
+      referer: "https://domains.squarespace.com/domain-search",
+      "sec-ch-ua": '"Chromium";v="143", "Not A(Brand";v="24"',
+      "sec-ch-ua-mobile": "?0",
+      "sec-ch-ua-model": '""',
+      "sec-ch-ua-platform": '"Linux"',
+      "sec-ch-ua-platform-version": '"6.14.0"',
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "user-agent":
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+      Cookie: "crumb=BbvKiq2DNdjpYWVmNWMzM2FhNDk3NWZhODFhMzVjMWZkNTk2Zjg4",
     },
   });
 };
@@ -27,13 +48,16 @@ export const queryDomain = async (domain: string, logger: any) => {
   try {
     if (logger) logger.info(`Querying domain: ${domain}`);
 
-    const instance = WhatDomainsInstance();
-    const response = await instance.get(`/_api?query=${domain}`);
+    const instance = SquareSpaceDomainsInstance();
+    const response = await instance.get(`/api/domain-search?query=${domain}`, {
+      maxBodyLength: Infinity,
+    });
 
     if (logger) logger.info("Domain query successful");
-    return response.data.result.results;
+    return response.data.defaultSuggestions;
   } catch (error) {
-    if (logger) logger.error("Error querying domain:", error);
+    console.log("ERROR", error);
+    if (logger) logger.error(`Error querying domain: ${error}`);
     throw error;
   }
 };
@@ -41,13 +65,12 @@ export const queryDomain = async (domain: string, logger: any) => {
 export const queryDomainStatus = async (domain: string, logger?: any) => {
   try {
     if (logger) logger.info(`Querying domain status: ${domain}`);
-
-    const instance = WhatDomainsInstance();
-    const response = await instance.get(`/_api/status?query=${domain}`);
-
+    const instance = NamecheapAPIInstance();
+    const response = await instance.get(`/v1/domainStatus?domains=${domain}`);
     if (logger) logger.info("Domain status query successful");
-    return response.data.result;
+    return response.data.status[0];
   } catch (error) {
+    console.log(error);
     if (logger) logger.error("Error querying domain status:", error);
     throw error;
   }
