@@ -45,6 +45,7 @@ declare module 'motia' {
     'Tester': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'Signup': ApiRouteHandler<{ firstname: string; lastname: string; email: string; password: string }, unknown, never>
     'Login': ApiRouteHandler<{ email: string; password: string }, unknown, never>
+    'AddDomain': ApiRouteHandler<{ username: string; domain: string }, unknown, never>
   }
     
 }
