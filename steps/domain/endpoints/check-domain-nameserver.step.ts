@@ -1,5 +1,5 @@
 import { ApiRouteConfig, Handlers } from "motia";
-import { queryDomainNameservers } from "../../services/utilsDomain/whatDomain";
+import { verifyNameServers } from "../../services/utilsDomain/whatDomain";
 
 export const config: ApiRouteConfig = {
   name: "VerifyNameServers",
@@ -20,31 +20,13 @@ export const handler: Handlers["VerifyNameServers"] = async (
     const { domain } = req.pathParams;
     logger.info(`Checking domain name server: ${domain}`);
 
-    const nameservers = await queryDomainNameservers(domain);
-    console.log(nameservers);
-
     // Expected nameservers
     const expectedNameservers = [
       "hydrogen.ns.hetzner.com.",
       "oxygen.ns.hetzner.com.",
       "helium.ns.hetzner.de.",
     ];
-
-    // Extract nameserver names from the response
-    const actualNameservers = nameservers.map((ns: any) => ns.name);
-
-    // Check if all expected nameservers are present
-    const allMatch = expectedNameservers.every((expected) =>
-      actualNameservers.includes(expected),
-    );
-
-    // Check if there are any extra nameservers
-    const hasOnlyExpected = actualNameservers.every((actual: string) =>
-      expectedNameservers.includes(actual),
-    );
-
-    const isValid = allMatch && hasOnlyExpected;
-
+    const isValid = await verifyNameServers(expectedNameservers, domain);
     if (isValid) {
       logger.info(`Domain ${domain} has correct nameservers`);
       return {
@@ -52,7 +34,6 @@ export const handler: Handlers["VerifyNameServers"] = async (
         body: {
           success: true,
           details: "Domain nameservers verified successfully",
-          nameservers: actualNameservers,
         },
       };
     } else {
@@ -63,7 +44,6 @@ export const handler: Handlers["VerifyNameServers"] = async (
           success: false,
           details: "Domain nameservers do not match expected configuration",
           expected: expectedNameservers,
-          actual: actualNameservers,
         },
       };
     }
