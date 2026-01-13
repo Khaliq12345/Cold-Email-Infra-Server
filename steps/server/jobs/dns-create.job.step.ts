@@ -17,7 +17,7 @@ export const handler: Handlers["BasicDnsCreateJob"] = async (
 ) => {
   const { domain, ipaddress } = input;
 
-  // Send the requests to create the server
+  // Send the requests to create the dns
   try {
     logger.info(`SETTING UP THE DNS >>>>> ${domain} - ${ipaddress}`);
     const response = await instance.post(

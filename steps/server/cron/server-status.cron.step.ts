@@ -44,6 +44,7 @@ export const handler: Handlers["checkStatus"] = async ({ emit, logger }) => {
             .eq("server_id", row.server_id);
         }
         logger.info(`Server ${row.server_name} updated`);
+        //Emit an event to start the basic dns config
       }
     }
   } catch (error) {

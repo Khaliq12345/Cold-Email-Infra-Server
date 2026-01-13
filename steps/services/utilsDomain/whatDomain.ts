@@ -75,3 +75,41 @@ export const queryDomainStatus = async (domain: string, logger?: any) => {
     throw error;
   }
 };
+
+export const queryDomainNameservers = async (domain: string, logger?: any) => {
+  try {
+    if (logger) logger.info(`Querying domain nameservers: ${domain}`);
+
+    const response = await fetch(
+      `https://api.ns-lookup.io/v1/dns?domain=${domain}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json, text/javascript, */*; q=0.01",
+          "Accept-Language": "en-US,en;q=0.9",
+          Connection: "keep-alive",
+          Origin: "https://www.ns-lookup.io",
+          Referer: "https://www.ns-lookup.io/",
+          "Sec-Fetch-Dest": "empty",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Site": "same-site",
+          "User-Agent":
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+          "sec-ch-ua": '"Chromium";v="143", "Not A(Brand";v="24"',
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": '"Linux"',
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (logger) logger.info("Domain nameservers query successful");
+
+    return data.data.zone.parent_nameservers;
+  } catch (error) {
+    console.log(error);
+    if (logger) logger.error("Error querying domain nameservers:", error);
+    throw error;
+  }
+};

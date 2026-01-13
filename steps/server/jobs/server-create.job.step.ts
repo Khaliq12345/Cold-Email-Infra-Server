@@ -42,9 +42,28 @@ export const handler: Handlers["CreateServerJob"] = async (
   const serverName = `${username}-${plan}-${planData.location}`;
 
   // Verify that server is not yet created
+  const { data, error } = await supabase
+    .from("servers")
+    .select("*")
+    .eq("server_name", serverName)
+    .maybeSingle();
+  if (data) {
+    return;
+  }
 
   // Send the requests to create the server
   try {
+    // Add server to the database
+    const { error: error1 } = await supabase.from("servers").insert({
+      server_name: serverName,
+      domain: domain,
+      status: serverStatus.pending,
+      server_id: null,
+    });
+    if (error1) {
+      throw Error("Unable to insert into the database");
+    }
+
     logger.info("CREATING THE SERVER");
     const response = await instance.post("/v1/servers", {
       name: serverName,
@@ -61,12 +80,15 @@ export const handler: Handlers["CreateServerJob"] = async (
     const server_id = response.data.server.id;
 
     // Update the database with the server id
-    const { data, error } = await supabase.from("servers").insert({
-      server_name: serverName,
-      domain: domain,
-      status: serverStatus.pending,
-      server_id: server_id,
-    });
+    const { data, error } = await supabase
+      .from("servers")
+      .update({
+        server_name: serverName,
+        domain: domain,
+        status: serverStatus.pending,
+        server_id: server_id,
+      })
+      .eq("server_name", serverName);
 
     if (error) {
       logger.error(`Unable to save the server into the database - ${error}`);

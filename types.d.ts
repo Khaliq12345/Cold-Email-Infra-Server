@@ -16,7 +16,6 @@ declare module 'motia' {
     'ConfigurePtrJob': EventHandler<never, never>
     'ConfigureDMARCJob': EventHandler<never, never>
     'ConfigureDKIMJob': EventHandler<never, never>
-    'CreateServerJob': EventHandler<never, never>
     'BasicDnsCreateJob': EventHandler<never, never>
     'ConfigurePRT': ApiRouteHandler<Record<string, unknown>, unknown, { topic: 'configure.ptr'; data: never }>
     'ConfigureDMARC': ApiRouteHandler<Record<string, unknown>, unknown, { topic: 'configure.dmarc'; data: never }>
@@ -42,10 +41,12 @@ declare module 'motia' {
     'QueryDomain': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'QueryDomainStatus': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'NamecheapCreateDomain': ApiRouteHandler<{ domainName: string; years: unknown; registrant: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; admin: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; tech: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; auxBilling: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; addFreeWhoisguard?: boolean; wgEnabled?: boolean; isPremiumDomain?: boolean; premiumPrice?: number; eapFee?: number }, unknown, never>
+    'AddDomain': ApiRouteHandler<{ username: string; domain: string }, unknown, never>
     'Tester': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'Signup': ApiRouteHandler<{ firstname: string; lastname: string; email: string; password: string }, unknown, never>
     'Login': ApiRouteHandler<{ email: string; password: string }, unknown, never>
-    'AddDomain': ApiRouteHandler<{ username: string; domain: string }, unknown, never>
+    'VerifyNameServers': ApiRouteHandler<Record<string, unknown>, unknown, never>
+    'CreateServerJob': EventHandler<never, never>
   }
     
 }

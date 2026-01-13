@@ -3,7 +3,6 @@ import { supabase } from "../services/supabase/supabase";
 
 export const authMiddleware: ApiMiddleware = async (req, ctx, next) => {
   const authHeader = req.headers.authorization as String;
-  console.log(authHeader);
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return {
       status: 401,
