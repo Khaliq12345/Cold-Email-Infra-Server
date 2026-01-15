@@ -29,11 +29,38 @@ export const handler: Handlers["CreateMailboxesJob"] = async (
   const token = await domainToken(domain);
 
   // Extract prefix from domain (e.g., testcompany.cv -> testcompany)
-  const domainPrefix = domain.split(".")[0];
+  const firstNames = [
+    "James",
+    "Mary",
+    "John",
+    "Patricia",
+    "Robert",
+    "Jennifer",
+    "Michael",
+    "Linda",
+    "William",
+    "Barbara",
+    "David",
+    "Elizabeth",
+  ];
+  const lastNames = [
+    "Smith",
+    "Johnson",
+    "Williams",
+    "Brown",
+    "Jones",
+    "Garcia",
+    "Miller",
+    "Davis",
+    "Rodriguez",
+    "Martinez",
+  ];
 
   for (let i = 1; i <= count; i++) {
-    const localPart = `${domainPrefix}_${i}_${generateStr(4)}`;
-    const fullEmail = `${localPart}@${domain}`;
+    const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+    const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+    const localpart = `${firstName}${lastName}_${generateStr(5)}`;
+    const fullEmail = `${localpart}@${domain}`;
     const password = generateStr(16);
 
     try {
@@ -46,6 +73,13 @@ export const handler: Handlers["CreateMailboxesJob"] = async (
             password: password,
             status: "pending",
             domain: domain,
+            first_name: firstName,
+            last_name: lastName,
+            username: fullEmail,
+            imap_host: "mail.testcompany.cv",
+            imap_port: "993",
+            smtp_host: "mail.testcompany.cv",
+            smtp_port: "465",
           },
         ])
         .select()
@@ -63,9 +97,9 @@ export const handler: Handlers["CreateMailboxesJob"] = async (
         const response = await axios.post(
           MAILCOW_API_BASE,
           {
-            local_part: localPart,
+            local_part: localpart,
             domain: domain,
-            name: `User ${localPart}`,
+            name: `${firstName} ${lastName}`,
             quota: "2048",
             password: password,
             password2: password,

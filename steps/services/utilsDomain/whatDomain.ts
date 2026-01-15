@@ -108,7 +108,6 @@ export const queryDomainNameservers = async (domain: string, logger?: any) => {
 
     return data.data?.zone?.parent_nameservers;
   } catch (error) {
-    console.log(error);
     if (logger) logger.error("Error querying domain nameservers:", error);
     throw error;
   }
@@ -120,7 +119,7 @@ export const verifyNameServers = async (
 ): Promise<boolean> => {
   const nameservers = await queryDomainNameservers(domain);
   // Extract nameserver names from the response
-  const actualNameservers = nameservers.map((ns: any) => ns.name);
+  const actualNameservers = nameservers?.map((ns: any) => ns.name);
 
   // Check if all expected nameservers are present
   const allMatch = expectedNameservers.every((expected) =>

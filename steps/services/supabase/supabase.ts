@@ -15,3 +15,12 @@ export const domainToken = async (domain: string) => {
     .single();
   return data?.token;
 };
+
+export const getPlusvibeWorkspace = async (domain: string) => {
+  const { data, error } = await supabase
+    .from("domains")
+    .select("plusvibe_workspace")
+    .eq("domain", domain)
+    .single();
+  return data?.plusvibe_workspace;
+};
