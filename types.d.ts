@@ -31,6 +31,7 @@ declare module 'motia' {
     'checkDmarcStatus': CronHandler<{ topic: 'configure.dmarc'; data: never }>
     'CreateWorkspaceJob': EventHandler<never, never>
     'AddMailboxAccountsJob': EventHandler<never, never>
+    'GetMailboxWarmupStats': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'ListMailboxAccounts': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'CreateWorkspace': ApiRouteHandler<{ domain: string; workspace_name: string }, unknown, { topic: 'plusvibe.workspace.create'; data: never }>
     'AddMailboxAccounts': ApiRouteHandler<Record<string, unknown>, unknown, { topic: 'plusvibe.add.mailboxes'; data: never }>
@@ -52,7 +53,6 @@ declare module 'motia' {
     'Tester': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'Signup': ApiRouteHandler<{ firstname: string; lastname: string; email: string; password: string }, unknown, never>
     'Login': ApiRouteHandler<{ email: string; password: string }, unknown, never>
-    'GetMailboxWarmupStats': ApiRouteHandler<{ domain: string; start_date: string; end_date: string; email_acc_id: string }, unknown, never>
   }
     
 }

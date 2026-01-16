@@ -18,8 +18,7 @@ export const config: ApiRouteConfig = {
   flows: ["PlusvibeManagement"],
   emits: [],
   path: "/plusvibe/warmup/stats",
-  method: "POST",
-  bodySchema: schema,
+  method: "GET",
 };
 
 export const handler: Handlers["GetMailboxWarmupStats"] = async (
@@ -29,7 +28,7 @@ export const handler: Handlers["GetMailboxWarmupStats"] = async (
   try {
     let reqInfo;
     try {
-      reqInfo = schema.parse(req.body);
+      reqInfo = schema.parse(req.queryParams);
     } catch (error) {
       logger.error(`Error in GetMailboxWarmupStats API: ${error}`);
       return {
