@@ -21,6 +21,8 @@ export const handler: Handlers["VerifyDomainNameserversJob"] = async (
     "oxygen.ns.hetzner.com.",
     "helium.ns.hetzner.de.",
   ];
+
+  logger.info(`verifying the Domain nameservers for all domains`);
   try {
     // retrieve the domains with unverified nameservers
     const { data, error } = await supabase
