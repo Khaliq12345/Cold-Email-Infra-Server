@@ -7,7 +7,7 @@ export const config: CronConfig = {
   description: "CRON job to create mailcow domain",
   flows: ["MailCowManagement"],
   emits: ["create.mailcow.domain"],
-  cron: "*/20 * * * *",
+  cron: "*/10 * * * *",
 };
 
 export const handler: Handlers["CreateMailcowDomainCron"] = async ({
