@@ -6,17 +6,10 @@ const cloudConfig = `#cloud-config\npackages:\n  - git\n  - openssl\n  - curl\n 
 
 const plans = {
   plan1: {
-    name: "demo-12345",
-    location: "nbg1",
+    name: "server-1",
+    location: "hil-dc1",
     image: "ubuntu-24.04",
-    server_type: "cpx22",
-    ssh_keys: ["khaliq-existantly"],
-  },
-  plan2: {
-    name: "",
-    location: "nbg1",
-    image: "ubuntu-24.04",
-    server_type: "cx23",
+    server_type: "cpx31",
     ssh_keys: ["khaliq-existantly"],
   },
 };

@@ -77,9 +77,9 @@ export const handler: Handlers["CreateMailboxesJob"] = async (
             first_name: firstName,
             last_name: lastName,
             username: fullEmail,
-            imap_host: "mail.testcompany.cv",
+            imap_host: `mail.${domain}`,
             imap_port: "993",
-            smtp_host: "mail.testcompany.cv",
+            smtp_host: `mail.${domain}`,
             smtp_port: "465",
           },
         ])
