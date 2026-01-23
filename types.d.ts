@@ -61,7 +61,6 @@ declare module 'motia' {
     'GetDomains': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'AddDomain': ApiRouteHandler<{ username: string; domain: string }, unknown, never>
     'VerifyDomainNameserversCron': CronHandler<{ topic: 'domain.verifynameservers'; data: never }>
-    'Tester': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'Signup': ApiRouteHandler<{ firstname: string; lastname: string; email: string; password: string }, unknown, never>
     'Login': ApiRouteHandler<{ email: string; password: string }, unknown, never>
   }
