@@ -1,22 +1,47 @@
-import { config } from "@motiadev/core";
+import { config } from "motia";
+import statesPlugin from "@motiadev/plugin-states/plugin";
 import endpointPlugin from "@motiadev/plugin-endpoint/plugin";
 import logsPlugin from "@motiadev/plugin-logs/plugin";
 import observabilityPlugin from "@motiadev/plugin-observability/plugin";
-import statesPlugin from "@motiadev/plugin-states/plugin";
 import bullmqPlugin from "@motiadev/plugin-bullmq/plugin";
 
+// Determine Redis configuration based on environment
+const getRedisConfig = () => {
+  const useExternalRedis =
+    process.env.USE_REDIS === "true" ||
+    (process.env.USE_REDIS !== "false" &&
+      process.env.NODE_ENV === "production");
+
+  if (!useExternalRedis) {
+    return { useMemoryServer: true as const };
+  }
+
+  const redisUrl = process.env.REDIS_URL;
+  if (redisUrl) {
+    try {
+      const url = new URL(redisUrl);
+      return {
+        useMemoryServer: false as const,
+        host: url.hostname,
+        port: parseInt(url.port || "6379", 10),
+        password: url.password || undefined,
+        username: url.username || undefined,
+      };
+    } catch (e) {
+      console.error("[motia] Failed to parse REDIS_URL:", e);
+    }
+  }
+
+  return {
+    useMemoryServer: false as const,
+    host: process.env.REDIS_HOST || "localhost",
+    port: parseInt(process.env.REDIS_PORT || "6379", 10),
+    password: process.env.REDIS_PASSWORD,
+    username: process.env.REDIS_USERNAME,
+  };
+};
+
 export default config({
-  // This allows Docker to tell the app where Redis is
-  redis: {
-    useMemoryServer: false,
-    host: process.env.REDIS_HOST || "redis",
-    port: parseInt(process.env.REDIS_PORT || "6379"),
-  },
-  // IMPORTANT: Ensure the server binds to 0.0.0.0 inside Docker
-  server: {
-    host: "0.0.0.0",
-    port: 3000,
-  },
   plugins: [
     observabilityPlugin,
     statesPlugin,
@@ -24,4 +49,5 @@ export default config({
     logsPlugin,
     bullmqPlugin,
   ],
+  redis: getRedisConfig(),
 });
