@@ -97,11 +97,12 @@ export const handler: Handlers["BasicDnsCreateJob"] = async (
     logger.info(response.data.zone.name);
 
     // Inform the dns database that the basic dns is set
-    const { data, error } = await supabase.from("domains").upsert({
-      domain: domain,
-      basic_dns: true,
-      username: username,
-    });
+    const { data, error } = await supabase
+      .from("domains")
+      .update({
+        basic_dns: true,
+      })
+      .eq("domain", domain);
     if (error) {
       logger.error(`Unable to save the dns info into the database - ${error}`);
     }
