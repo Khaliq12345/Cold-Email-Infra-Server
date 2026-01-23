@@ -7,7 +7,7 @@ export const config: CronConfig = {
   description: "CRON job that fetch mailcow token",
   flows: ["MailCowManagement"],
   emits: ["fetch.mailcow.apitoken"],
-  cron: "*/2 * * * *",
+  cron: "*/20 * * * *",
 };
 
 export const handler: Handlers["FetchMailcowTokenCron"] = async ({
