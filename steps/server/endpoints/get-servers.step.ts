@@ -1,5 +1,5 @@
 import { ApiRouteConfig, Handlers } from "motia";
-import { instance } from "../server-instance";
+import { instance } from "../../services/server/server";
 import { authMiddleware } from "../../middlewares/auth.middleware";
 
 export const config: ApiRouteConfig = {

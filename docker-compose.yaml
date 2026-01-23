@@ -1,12 +1,24 @@
 services:
-  app:
+  redis:
+    image: redis:7-alpine
+    container_name: motia-redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  motia:
     build: .
     container_name: motia-app
     ports:
-      - "3000:3000"
-    # This line tells Docker to load your .env file
-    env_file:
-      - .env
+      - "3006:3000"
     environment:
       - NODE_ENV=production
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      redis:
+        condition: service_healthy
     restart: "no"

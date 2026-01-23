@@ -1,5 +1,5 @@
 import { ApiRouteConfig, Handlers } from "motia";
-import { instance } from "../server-instance";
+import { instance } from "../../services/server/server";
 
 export const config: ApiRouteConfig = {
   type: "api",

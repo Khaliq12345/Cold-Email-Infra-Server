@@ -44,7 +44,6 @@ declare module 'motia' {
     'FetchMailcowTokenJob': EventHandler<never, never>
     'CreateMailcowDomainJob': EventHandler<never, never>
     'CreateMailboxesJob': EventHandler<never, never>
-    'GetMailboxes': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'GetDomainDetails': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'FetchMailcowToken': ApiRouteHandler<Record<string, unknown>, unknown, { topic: 'fetch.mailcow.apitoken'; data: never }>
     'GetMailcowDKIMJob': ApiRouteHandler<Record<string, unknown>, unknown, never>
@@ -52,6 +51,7 @@ declare module 'motia' {
     'CreateMailboxes': ApiRouteHandler<{ domain: string; count: number }, unknown, { topic: 'create.mailboxes'; data: never }>
     'FetchMailcowTokenCron': CronHandler<{ topic: 'fetch.mailcow.apitoken'; data: never }>
     'CreateMailcowDomainCron': CronHandler<{ topic: 'create.mailcow.domain'; data: never }>
+    'GetMailboxes': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'checkMailboxStatus': CronHandler<never>
     'VerifyDomainNameserversJob': EventHandler<never, never>
     'VerifyDomainNameservers': ApiRouteHandler<Record<string, unknown>, unknown, { topic: 'domain.verifynameservers'; data: never }>
