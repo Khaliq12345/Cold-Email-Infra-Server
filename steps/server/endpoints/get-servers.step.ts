@@ -9,7 +9,7 @@ export const config: ApiRouteConfig = {
   method: "GET",
   flows: ["ServerManagement"],
   emits: [],
-  middleware: [authMiddleware],
+  // middleware: [authMiddleware],
 };
 
 export const handler: Handlers["GetServers"] = async (req, { logger }) => {

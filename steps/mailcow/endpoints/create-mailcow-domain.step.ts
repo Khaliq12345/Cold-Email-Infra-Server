@@ -6,8 +6,8 @@ export const config: ApiRouteConfig = {
   description: "Endpoint to call the create mailcow domain",
   flows: ["MailCowManagement"],
   emits: ["create.mailcow.domain"],
-  path: "/mailcow/create-domain/:domain",
-  method: "GET",
+  path: "/mailcow/domains/:domain",
+  method: "POST",
 };
 
 export const handler: Handlers["CreateMailcowDomain"] = async (

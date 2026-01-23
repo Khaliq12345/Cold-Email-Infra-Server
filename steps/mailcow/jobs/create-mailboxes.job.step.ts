@@ -27,6 +27,7 @@ export const handler: Handlers["CreateMailboxesJob"] = async (
   // 1. Setup API Configuration
   const MAILCOW_API_BASE = `https://mail.${domain}/api/v1/add/mailbox`;
   const token = await domainToken(domain);
+  logger.info(token);
 
   // Extract prefix from domain (e.g., testcompany.cv -> testcompany)
   const firstNames = [
@@ -59,7 +60,7 @@ export const handler: Handlers["CreateMailboxesJob"] = async (
   for (let i = 1; i <= count; i++) {
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
     const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-    const localpart = `${firstName}${lastName}_${generateStr(5)}`;
+    const localpart = `${firstName}-${generateStr(2)}`;
     const fullEmail = `${localpart}@${domain}`;
     const password = generateStr(16);
 
@@ -116,8 +117,6 @@ export const handler: Handlers["CreateMailboxesJob"] = async (
           },
         );
 
-        console.log(response.data, response.data[0].type);
-
         // --- FIXED LOGIC HERE ---
         // Mailcow returns an array: [{ type: 'success', msg: '...', ... }]
         const result = response.data[0];
@@ -132,19 +131,19 @@ export const handler: Handlers["CreateMailboxesJob"] = async (
         // --- STEP 3: UPDATE DB STATUS ON SUCCESS ---
         await supabase
           .from("mailboxes")
-          .update({ status: "active" })
+          .update({ is_active: true })
           .eq("email", dbRecord.email);
 
         logger.info(`✅ Successfully created: ${fullEmail}`);
       } catch (apiError: any) {
         // --- STEP 4: ROLLBACK DB ON API FAILURE ---
         const errorMsg = apiError.response?.data || apiError.message;
-        logger.error(`❌ Mailcow API Failed for ${fullEmail}:`, errorMsg);
+        logger.error(`❌ Mailcow API Failed for ${fullEmail}: ${errorMsg}`);
 
         await supabase.from("mailboxes").delete().eq("id", dbRecord.id);
       }
     } catch (criticalError) {
-      logger.error(`Critical error during iteration ${i}:`, criticalError);
+      logger.error(`Critical error during iteration ${i}: ${criticalError}`);
     }
   }
 

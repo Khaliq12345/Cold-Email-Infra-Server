@@ -1,6 +1,7 @@
 import { EventConfig, Handlers } from "motia";
 import { domainToken } from "../../services/supabase/supabase";
 import axios from "axios";
+import { supabase } from "../../services/supabase/supabase";
 
 export const config: EventConfig = {
   name: "CreateMailcowDomainJob",
@@ -22,6 +23,7 @@ export const handler: Handlers["CreateMailcowDomainJob"] = async (
   logger.info("RETRIEVING THE TOKEN");
   const MAILCOW_API_URL = `https://mail.${domain}/api/v1`;
   const token = await domainToken(domain);
+  logger.info(token);
 
   try {
     logger.info("SENDING THE REQUESTS TO CREATE THE DOMAIN");
@@ -29,14 +31,14 @@ export const handler: Handlers["CreateMailcowDomainJob"] = async (
       `${MAILCOW_API_URL}/add/domain`,
       {
         domain: domain,
-        description: "Test company domain",
+        description: "Official Company domain",
         aliases: "200",
         mailboxes: "100", // 50 mailboxes allowed
         defquota: "2048", // 2GB default quota
         maxquota: "2048", // 10GB max per mailbox
         quota: "80200", // 50GB total quota
         active: "1", // Active (1 = yes, 0 = no)
-        rl_value: "100", // Rate limit: 100 emails
+        rl_value: "500", // Rate limit: 100 emails
         rl_frame: "d", // per hour (s=second, m=minute, h=hour, d=day)
         backupmx: "0", // Not a backup MX (0 = no, 1 = yes)
         relay_all_recipients: "0", // Relay all recipients (1 = yes, 0 = no)
@@ -49,10 +51,17 @@ export const handler: Handlers["CreateMailcowDomainJob"] = async (
         },
       },
     );
+    // Update the database that the domain is created
+    await supabase
+      .from("mailcow")
+      .update({
+        mailcow_domain_created: true,
+      })
+      .eq("domain", domain);
 
     logger.info("Domain created successfully");
   } catch (error) {
-    logger.error("Error adding domain:", error);
+    logger.error(`Error adding domain: ${error}`);
     throw error;
   }
 };

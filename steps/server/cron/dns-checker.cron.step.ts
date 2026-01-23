@@ -1,47 +1,56 @@
 import { CronConfig, Handlers } from "motia";
 import { supabase } from "../../services/supabase/supabase";
-import { promises as dns } from "dns"; // Use the promises API
+import { promises as dns } from "dns";
 
 export const config: CronConfig = {
   type: "cron",
   name: "checkDomainDns",
   description:
     "Check the status of a domain dns and start the advance dns setup",
-  cron: "0 */3 * * *", // Fixed: This runs every 10 minutes
+  cron: "*/5 * * * *",
   emits: [],
   flows: ["ServerManagement"],
 };
 
-export const handler: Handlers["checkDomainDns"] = async ({ logger }) => {
+export const handler: Handlers["checkDomainDns"] = async ({ logger, emit }) => {
   try {
     const { error, data } = await supabase
       .from("domains")
-      .select("*")
-      .eq("basic_dns", true); // Use .eq for boolean checks usually
+      .select("*, servers(*)")
+      .eq("basic_dns", true)
+      .or("domain_resolves_to_ip.is.false,domain_resolves_to_ip.is.null");
 
     if (error) throw error;
 
     if (!data || data.length === 0) {
-      logger.info("No pending DNS records to check.");
+      logger.info("No records to check.");
       return;
     }
 
-    for (const row of data) {
+    for (const domainInfo of data) {
+      console.log(domainInfo.servers);
       try {
-        logger.info(`Checking DOMAIN: ${row.domain}`);
-
-        // Resolve the actual domain from the database
-        const addresses = await dns.resolve4(row.domain);
-
         logger.info(
-          `Success: ${row.domain} resolved to ${addresses.join(", ")}`,
+          `Checking DOMAIN Resolves to the server's ip addrese: ${domainInfo.domain}`,
         );
 
+        // Resolve the actual domain from the database
+        const addresses = await dns.resolve4(domainInfo.domain);
+        logger.info(`Address - ${addresses}`);
+        const ipaddress = addresses[0];
+
+        logger.info(`Success: ${domainInfo.domain} resolved to ${ipaddress}`);
+
         // Example: Update Supabase if the DNS is verified
-        // await supabase.from("domains").update({ verified: true }).eq("id", row.id);
+        if (domainInfo.servers.ipaddress.trim() === ipaddress.trim()) {
+          await supabase
+            .from("domains")
+            .update({ domain_resolves_to_ip: true })
+            .eq("domain", domainInfo.domain);
+        }
       } catch (dnsError: any) {
         logger.error(
-          `DNS lookup failed for ${row.domain}: ${dnsError.message}`,
+          `DNS lookup failed for ${domainInfo.domain}: ${dnsError.message}`,
         );
       }
     }

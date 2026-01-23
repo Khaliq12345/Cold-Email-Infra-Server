@@ -21,19 +21,30 @@ export const handler: Handlers["FetchMailcowTokenJob"] = async (
   try {
     logger.info("SET UP THE BROWSER");
     const browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: ["--disable-setuid-sandbox", "--no-sandbox"],
     });
     const page = await browser.newPage();
+    await page.setUserAgent({
+      userAgent:
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    });
 
     logger.info("LOGGING INTO MAILCOW");
-    await page.goto(`https://mail.${domain}/admin/`);
+    await page.goto(`https://mail.${domain}/admin/`, {
+      waitUntil: "networkidle2",
+      timeout: 60000,
+    });
     await new Promise((resolve) => setTimeout(resolve, 5000));
     await page.locator('input[id="login_user"]').fill("admin");
     await page.locator('input[id="pass_user"]').fill("moohoo");
     await page.click('button[type="submit"]');
+    await new Promise((r) => setTimeout(r, 5000));
 
     logger.info("GO TO THE CONFIGURATION PAGE");
-    await page.goto(`https://mail.${domain}/admin/system`);
+    await page.goto(`https://mail.${domain}/admin/system`, {
+      waitUntil: "networkidle2",
+      timeout: 60000,
+    });
     logger.info("CLICK ON API");
     await page.locator('legend[data-bs-target="#admin_api"]').click();
     await new Promise((resolve) => setTimeout(resolve, 5000));

@@ -147,6 +147,31 @@ export const getAccountWarmupStats = async (
   }
 };
 
+export const listEmailAccounts = async (
+  workspaceId: string,
+  logger?: any,
+): Promise<any> => {
+  try {
+    if (logger)
+      logger.info(`Listing email accounts for workspace: ${workspaceId}`);
+
+    const instance = PlusVibeAPIInstance();
+
+    const params: any = {
+      workspace_id: workspaceId,
+    };
+
+    const response = await instance.get("/account/list", { params });
+
+    return response.data.accounts;
+  } catch (error: any) {
+    const errorMessage = error.response?.data?.message || error.message;
+    if (logger)
+      logger.error(`PlusVibe List Email Accounts Error: ${errorMessage}`);
+    throw error;
+  }
+};
+
 export const addWorkspace = async (
   referenceWorkspaceId: string,
   newWorkspaceName: string,
@@ -154,15 +179,11 @@ export const addWorkspace = async (
 ): Promise<{ workspace_id: string; status: string }> => {
   try {
     if (logger) logger.info(`Creating new workspace: ${newWorkspaceName}`);
-
     const instance = PlusVibeAPIInstance();
-
     const response = await instance.post("/workspaces/add/", {
       workspace_id: referenceWorkspaceId,
       workspace_name: newWorkspaceName,
     });
-    console.log(response);
-
     return response.data;
   } catch (error: any) {
     const errorMessage = error.response?.data?.message || error.message;

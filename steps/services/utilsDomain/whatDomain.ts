@@ -123,11 +123,11 @@ export const verifyNameServers = async (
 
   // Check if all expected nameservers are present
   const allMatch = expectedNameservers.every((expected) =>
-    actualNameservers.includes(expected),
+    actualNameservers?.includes(expected),
   );
 
   // Check if there are any extra nameservers
-  const hasOnlyExpected = actualNameservers.every((actual: string) =>
+  const hasOnlyExpected = actualNameservers?.every((actual: string) =>
     expectedNameservers.includes(actual),
   );
 

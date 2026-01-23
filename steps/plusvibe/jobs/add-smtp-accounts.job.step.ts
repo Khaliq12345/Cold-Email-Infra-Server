@@ -69,7 +69,7 @@ export const handler: Handlers["AddMailboxAccountsJob"] = async (
 
     const { error: updateError } = await supabase
       .from("mailboxes")
-      .update({ added_to_plusvibe: true })
+      .update({ added_to_plusvibe: true, status: "warming" })
       .in("email", accountEmails); // Efficiently updates all processed emails at once
 
     if (updateError) {

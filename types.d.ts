@@ -12,7 +12,8 @@ declare module 'motia' {
   }
 
   interface Handlers {
-    'RunCode': ApiRouteHandler<Record<string, unknown>, unknown, never>
+    'GetCheckoutSession': ApiRouteHandler<Record<string, unknown>, unknown, never>
+    'CreatePaymentLink': ApiRouteHandler<{ domain: string; username: string }, unknown, never>
     'ConfigurePtrJob': EventHandler<never, never>
     'ConfigureDMARCJob': EventHandler<never, never>
     'ConfigureDKIMJob': EventHandler<never, never>
@@ -26,30 +27,40 @@ declare module 'motia' {
     'GetServerStatus': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'CreateServer': ApiRouteHandler<{ plan: 'plan1' | 'plan2'; username: string; domain: string }, unknown, { topic: 'server.create'; data: never }>
     'SetupDNS': ApiRouteHandler<{ domain: string; ipaddress: string }, unknown, { topic: 'dns.basic.create'; data: never }>
+    'ConfigurePtrCron': CronHandler<{ topic: 'configure.ptr'; data: never }>
+    'ConfigureDmarcCron': CronHandler<{ topic: 'configure.dmarc'; data: never }>
+    'ConfigureDKIMCron': CronHandler<{ topic: 'configure.dkim'; data: never }>
     'checkStatus': CronHandler<never>
     'checkDomainDns': CronHandler<never>
-    'checkDmarcStatus': CronHandler<{ topic: 'configure.dmarc'; data: never }>
+    'setBasicDnsCron': CronHandler<{ topic: 'dns.basic.create'; data: never }>
     'CreateWorkspaceJob': EventHandler<never, never>
     'AddMailboxAccountsJob': EventHandler<never, never>
     'GetMailboxWarmupStats': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'ListMailboxAccounts': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'CreateWorkspace': ApiRouteHandler<{ domain: string; workspace_name: string }, unknown, { topic: 'plusvibe.workspace.create'; data: never }>
     'AddMailboxAccounts': ApiRouteHandler<Record<string, unknown>, unknown, { topic: 'plusvibe.add.mailboxes'; data: never }>
+    'CreateWorkspaceCron': CronHandler<{ topic: 'plusvibe.workspace.create'; data: never }>
+    'AddMailboxAccountsCron': CronHandler<{ topic: 'plusvibe.add.mailboxes'; data: never }>
     'FetchMailcowTokenJob': EventHandler<never, never>
     'CreateMailcowDomainJob': EventHandler<never, never>
     'CreateMailboxesJob': EventHandler<never, never>
     'GetMailboxes': ApiRouteHandler<Record<string, unknown>, unknown, never>
-    'GetDomains': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'GetDomainDetails': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'FetchMailcowToken': ApiRouteHandler<Record<string, unknown>, unknown, { topic: 'fetch.mailcow.apitoken'; data: never }>
     'GetMailcowDKIMJob': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'CreateMailcowDomain': ApiRouteHandler<Record<string, unknown>, unknown, { topic: 'create.mailcow.domain'; data: never }>
     'CreateMailboxes': ApiRouteHandler<{ domain: string; count: number }, unknown, { topic: 'create.mailboxes'; data: never }>
+    'FetchMailcowTokenCron': CronHandler<{ topic: 'fetch.mailcow.apitoken'; data: never }>
+    'CreateMailcowDomainCron': CronHandler<{ topic: 'create.mailcow.domain'; data: never }>
+    'checkMailboxStatus': CronHandler<never>
+    'VerifyDomainNameserversJob': EventHandler<never, never>
+    'VerifyDomainNameservers': ApiRouteHandler<Record<string, unknown>, unknown, { topic: 'domain.verifynameservers'; data: never }>
     'QueryDomain': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'QueryDomainStatus': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'NamecheapCreateDomain': ApiRouteHandler<{ domainName: string; years: unknown; registrant: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; admin: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; tech: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; auxBilling: { firstName: string; lastName: string; address1: string; city: string; stateProvince: string; postalCode: string; country: string; phone: string; emailAddress: string; organizationName?: string }; addFreeWhoisguard?: boolean; wgEnabled?: boolean; isPremiumDomain?: boolean; premiumPrice?: number; eapFee?: number }, unknown, never>
-    'VerifyNameServers': ApiRouteHandler<Record<string, unknown>, unknown, never>
+    'GetDomains': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'AddDomain': ApiRouteHandler<{ username: string; domain: string }, unknown, never>
+    'VerifyDomainNameserversCron': CronHandler<{ topic: 'domain.verifynameservers'; data: never }>
     'Tester': ApiRouteHandler<Record<string, unknown>, unknown, never>
     'Signup': ApiRouteHandler<{ firstname: string; lastname: string; email: string; password: string }, unknown, never>
     'Login': ApiRouteHandler<{ email: string; password: string }, unknown, never>

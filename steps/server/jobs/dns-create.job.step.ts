@@ -1,5 +1,5 @@
 import { ApiRouteConfig, Handlers } from "motia";
-import { instance } from "../server-instance";
+import { instance } from "../../services/server/server";
 import { supabase } from "../../services/supabase/supabase";
 
 export const config: ApiRouteConfig = {
@@ -15,7 +15,7 @@ export const handler: Handlers["BasicDnsCreateJob"] = async (
   input,
   { logger },
 ) => {
-  const { domain, ipaddress } = input;
+  const { domain, ipaddress, username } = input;
 
   // Send the requests to create the dns
   try {
@@ -97,11 +97,11 @@ export const handler: Handlers["BasicDnsCreateJob"] = async (
     logger.info(response.data.zone.name);
 
     // Inform the dns database that the basic dns is set
-    const { data, error } = await supabase.from("domains").insert({
+    const { data, error } = await supabase.from("domains").upsert({
       domain: domain,
       basic_dns: true,
+      username: username,
     });
-
     if (error) {
       logger.error(`Unable to save the dns info into the database - ${error}`);
     }

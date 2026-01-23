@@ -1,5 +1,5 @@
 import { EventConfig, Handlers } from "motia";
-import { instance } from "../server-instance";
+import { instance } from "../../services/server/server";
 import { supabase } from "../../services/supabase/supabase";
 
 export const config: EventConfig = {

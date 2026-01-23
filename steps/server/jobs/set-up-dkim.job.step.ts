@@ -1,6 +1,6 @@
 import { EventConfig, Handlers } from "motia";
 import { extractDKIM } from "../../services/mailcow/mailcow";
-import { instance } from "../server-instance";
+import { instance } from "../../services/server/server";
 import { supabase } from "../../services/supabase/supabase";
 
 function formatDkimValue(dkimTxt: string) {
@@ -35,33 +35,35 @@ export const handler: Handlers["ConfigureDKIMJob"] = async (
 ) => {
   const { domain } = input;
 
-  const dkimInfo = await extractDKIM(domain, logger);
+  try {
+    const dkimInfo = await extractDKIM(domain, logger);
+    logger.info(`CONFIGURING DKIM FOR - ${domain}`);
 
-  logger.info(`CONFIGURING DKIM FOR - ${domain}`);
+    let dkim_data = {
+      name: "dkim._domainkey",
+      type: "TXT",
+      records: [
+        {
+          value: formatDkimValue(dkimInfo.dkim_txt),
+        },
+      ],
+    };
+    await instance.post(`v1/zones/${domain}/rrsets`, dkim_data);
+    logger.info("DONE CONFIGURING DKIM; UPDATING THE DATABASE");
 
-  let dkim_data = {
-    name: "dkim._domainkey",
-    type: "TXT",
-    records: [
-      {
-        value: formatDkimValue(dkimInfo.dkim_txt),
-      },
-    ],
-  };
+    const { data, error } = await supabase
+      .from("domains")
+      .update({
+        dkim: true,
+        dkim_set_date: new Date().toISOString(),
+      })
+      .eq("domain", domain);
+    if (error) {
+      logger.error(`ERROR UPDATING THE DATABASE ${error}`);
+    }
 
-  await instance.post(`v1/zones/${domain}/rrsets`, dkim_data);
-  logger.info("DONE CONFIGURING DKIM; UPDATING THE DATABASE");
-
-  const { data, error } = await supabase
-    .from("domains")
-    .update({
-      dkim: true,
-      dkim_set_date: new Date().toISOString(),
-    })
-    .eq("domain", domain);
-  if (error) {
-    logger.error("ERROR UPDATING THE DATABASE", error);
+    logger.info("DATABASE UPDATED");
+  } catch (error) {
+    logger.info(`Error CONFIGURING DKIM - ${error}`);
   }
-
-  logger.info("DATABASE UPDATED");
 };

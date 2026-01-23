@@ -3,26 +3,26 @@ import { supabase } from "../../services/supabase/supabase";
 
 export const config: CronConfig = {
   type: "cron",
-  name: "checkDmarcStatus",
-  description: "Check the status of the dmarc dns and update it if it is ready",
-  cron: "0 */3 * * *",
+  name: "ConfigureDmarcCron",
+  description: "Setup Dmarc if it is ready",
+  cron: "*/5 * * * *",
   emits: ["configure.dmarc"],
   flows: ["ServerManagement"],
 };
 
-export const handler: Handlers["checkDmarcStatus"] = async ({
+export const handler: Handlers["ConfigureDmarcCron"] = async ({
   emit,
   logger,
 }) => {
   // fetch all pending dns
   try {
-    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000).toISOString();
-    logger.info(`10 minutes ago - ${tenMinutesAgo}`);
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    logger.info(`10 minutes ago - ${oneHourAgo}`);
     const { error, data } = await supabase
       .from("domains")
       .select("*")
-      .is("dmarc", false)
-      .lte("dkim_set_date", tenMinutesAgo);
+      .or("dmarc.is.false,dmarc.is.null")
+      .lte("dkim_set_date", oneHourAgo);
     if (error) {
       logger.error("Error fetching DNS from Database");
       return; // Exit early if there's an error

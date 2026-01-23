@@ -1,6 +1,5 @@
 import { ApiRouteConfig, Handlers } from "motia";
-import { instance } from "../server-instance";
-import { serverStatus } from "../server-status";
+import { serverStatus, instance } from "../../services/server/server";
 import { supabase } from "../../services/supabase/supabase";
 
 const cloudConfig = `#cloud-config\npackages:\n  - git\n  - openssl\n  - curl\n  - gawk\n  - coreutils\n  - grep\n  - apt-transport-https\n  - ca-certificates\n  - gnupg\n  - lsb-release\n  - jq\n  \npackage_update: true\npackage_upgrade: true\n\nruncmd:\n  # 2. Install Docker\n  - curl -fsSL https://get.docker.com -o get-docker.sh\n  - sudo sh get-docker.sh\n\n\n  # 4. Mailcow Installation\n  - cd /opt\n  - git clone https://github.com/mailcow/mailcow-dockerized\n  - cd mailcow-dockerized\n  - export MAILCOW_HOSTNAME="mail.examp.com"\n  - export MAILCOW_TZ="Europe/Berlin"\n  - export MAILCOW_BRANCH=1\n  - printf "" | ./generate_config.sh\n  - sudo docker compose pull\n  - sudo docker compose up -d\n  \n  # 5. Finalize\n  - reboot`;
