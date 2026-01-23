@@ -31,6 +31,7 @@ declare module 'motia' {
     'ConfigureDmarcCron': CronHandler<{ topic: 'configure.dmarc'; data: never }>
     'ConfigureDKIMCron': CronHandler<{ topic: 'configure.dkim'; data: never }>
     'checkStatus': CronHandler<never>
+    'CreateServerCron': CronHandler<{ topic: 'server.create'; data: never }>
     'checkDomainDns': CronHandler<never>
     'setBasicDnsCron': CronHandler<{ topic: 'dns.basic.create'; data: never }>
     'CreateWorkspaceJob': EventHandler<never, never>

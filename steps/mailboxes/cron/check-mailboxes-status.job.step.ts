@@ -7,7 +7,7 @@ export const config: CronConfig = {
   name: "checkMailboxStatus",
   description:
     "Check the status of the mailboxes and update it based on some conditions",
-  cron: "*/15 * * * *",
+  cron: "*/60 * * * *",
   emits: [],
   flows: ["GetMailboxes"],
 };

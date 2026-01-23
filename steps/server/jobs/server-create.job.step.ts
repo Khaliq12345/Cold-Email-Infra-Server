@@ -7,9 +7,9 @@ const cloudConfig = `#cloud-config\npackages:\n  - git\n  - openssl\n  - curl\n 
 const plans = {
   plan1: {
     name: "server-1",
-    location: "hil-dc1",
+    location: "hil",
     image: "ubuntu-24.04",
-    server_type: "cpx31",
+    server_type: "ccx23",
     ssh_keys: ["khaliq-existantly"],
   },
 };
@@ -28,35 +28,21 @@ export const handler: Handlers["CreateServerJob"] = async (
   { emit, logger },
 ) => {
   const { username, plan, domain } = input;
-  logger.info(username, plan, domain);
+  logger.info(`${username} | ${plan} | ${domain}`);
 
   const planData = plans[plan];
   const serverName = `${username}-${plan}-${planData.location}`;
-
-  // Verify that server is not yet created
-  const { data, error } = await supabase
-    .from("servers")
-    .select("*")
-    .eq("server_name", serverName)
-    .maybeSingle();
-  if (data) {
-    return;
-  }
-
   // Send the requests to create the server
   try {
-    // Add server to the database
-    const { error: error1 } = await supabase.from("servers").insert({
-      server_name: serverName,
-      domain: domain,
-      status: serverStatus.pending,
-      server_id: null,
-    });
-    if (error1) {
-      throw Error("Unable to insert into the database");
+    const response1 = await instance.get(`/v1/servers?name=${serverName}`);
+    const servers = response1.data.servers;
+    if (servers.length > 0) {
+      const server = servers[0];
+      logger.info("SERVER IS ALREADY CREATED");
+      const server_id = server.id;
+      return;
     }
-
-    logger.info("CREATING THE SERVER");
+    logger.info(`CREATING THE SERVER - ${planData}`);
     const response = await instance.post("/v1/servers", {
       name: serverName,
       location: planData.location,
@@ -68,22 +54,17 @@ export const handler: Handlers["CreateServerJob"] = async (
         `MAILCOW_HOSTNAME="mail.${domain}"`,
       ),
     });
-
     const server_id = response.data.server.id;
 
-    // Update the database with the server id
-    const { data, error } = await supabase
-      .from("servers")
-      .update({
-        server_name: serverName,
-        domain: domain,
-        status: serverStatus.pending,
-        server_id: server_id,
-      })
-      .eq("server_name", serverName);
-
-    if (error) {
-      logger.error(`Unable to save the server into the database - ${error}`);
+    // Add server to the database
+    const { error: error1 } = await supabase.from("servers").insert({
+      server_name: serverName,
+      domain: domain,
+      status: serverStatus.pending,
+      server_id: server_id,
+    });
+    if (error1) {
+      throw Error("Unable to insert into the database");
     }
     logger.info("SERVER CREATED!");
   } catch (error) {
