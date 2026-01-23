@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    container_name: motia-app
+    ports:
+      - "3000:3000"
+    # This line tells Docker to load your .env file
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+    restart: always

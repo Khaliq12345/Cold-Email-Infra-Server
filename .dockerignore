@@ -1,0 +1,29 @@
+# Dependencies
+node_modules
+npm-debug.log
+
+# Environment Variables and Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.secrets
+*.pem
+*.key
+
+# Version Control
+.git
+.gitignore
+.hg
+.svn
+
+# Build folders and caches
+dist
+build
+.npm
+.cache
+
+# OS metadata
+.DS_Store
+Thumbs.db
