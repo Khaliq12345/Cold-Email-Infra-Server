@@ -13,7 +13,7 @@ export const GetPaymentLink = async (domain: string, username: string) => {
     after_completion: {
       type: "redirect",
       redirect: {
-        url: `${process.env.FRONTEND_BASE_URL}/domains/import/checkout/{CHECKOUT_SESSION_ID}`,
+        url: `${process.env.FRONTEND_BASE_URL}/import/checkout/{CHECKOUT_SESSION_ID}`,
       },
     },
     metadata: {
