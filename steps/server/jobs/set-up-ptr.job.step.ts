@@ -18,30 +18,75 @@ export const handler: Handlers["ConfigurePtrJob"] = async (
   const { ipaddress, domain } = input;
   const mailDomain = `mail.${domain}`;
 
-  logger.info(`CONFIGURING PTR FOR - ${ipaddress}`);
+  try {
+    // 1. Pre-check: Check if PTR is already marked as true in the DB
+    const { data: domainData, error: fetchError } = await supabase
+      .from("domains")
+      .select("ptr")
+      .eq("domain", domain)
+      .single();
 
-  let response = await instance.get(`/v1/primary_ips?ip=${ipaddress}`);
-  const primary_ip_id = response.data.primary_ips[0].id;
-  logger.info(`PRIMARY IP - ${primary_ip_id}`);
+    if (fetchError) {
+      logger.error(`Error fetching PTR status: ${fetchError.message}`);
+    }
 
-  await instance.post(
-    `/v1/primary_ips/${primary_ip_id}/actions/change_dns_ptr`,
-    {
-      ip: ipaddress,
-      dns_ptr: mailDomain,
-    },
-  );
-  logger.info("DONE CONFIGURING PTR; UPDATING THE DATABASE");
+    if (domainData?.ptr === true) {
+      logger.info(
+        `PTR for ${domain} (${ipaddress}) is already set in DB. Skipping...`,
+      );
+      return;
+    }
 
-  const { data, error } = await supabase
+    logger.info(`CONFIGURING PTR FOR - ${ipaddress}`);
+
+    // 2. Lookup the Primary IP ID
+    const response = await instance.get(`/v1/primary_ips?ip=${ipaddress}`);
+
+    if (!response.data.primary_ips || response.data.primary_ips.length === 0) {
+      throw new Error(`No primary IP found for address: ${ipaddress}`);
+    }
+
+    const primary_ip_id = response.data.primary_ips[0].id;
+    logger.info(`PRIMARY IP ID FOUND - ${primary_ip_id}`);
+
+    // 3. Request to change the DNS PTR
+    await instance.post(
+      `/v1/primary_ips/${primary_ip_id}/actions/change_dns_ptr`,
+      {
+        ip: ipaddress,
+        dns_ptr: mailDomain,
+      },
+    );
+
+    // 4. Update Database on success
+    await updatePtrStatus(domain, logger);
+  } catch (error: any) {
+    // 5. Handle 409 Conflict (PTR already matches/exists)
+    if (error.response?.status === 409) {
+      logger.warn(
+        `PTR for ${ipaddress} already matches ${mailDomain} (409). Syncing DB...`,
+      );
+      await updatePtrStatus(domain, logger);
+    } else {
+      logger.error(`Error CONFIGURING PTR - ${error.message || error}`);
+    }
+  }
+};
+
+/**
+ * Helper function to update the database status for PTR
+ */
+async function updatePtrStatus(domain: string, logger: any) {
+  const { error } = await supabase
     .from("domains")
     .update({
       ptr: true,
     })
     .eq("domain", domain);
-  if (error) {
-    logger.error("ERROR UPDATING THE DATABASE", error);
-  }
 
-  logger.info("DATABASE UPDATED");
-};
+  if (error) {
+    logger.error(`ERROR UPDATING THE DATABASE (PTR): ${error.message}`);
+  } else {
+    logger.info(`DATABASE UPDATED: PTR marked as set for ${domain}`);
+  }
+}

@@ -33,16 +33,16 @@ export const handler: Handlers["CreateMailcowDomainJob"] = async (
         domain: domain,
         description: "Official Company domain",
         aliases: "200",
-        mailboxes: "100", // 50 mailboxes allowed
-        defquota: "2048", // 2GB default quota
-        maxquota: "2048", // 10GB max per mailbox
-        quota: "80200", // 50GB total quota
-        active: "1", // Active (1 = yes, 0 = no)
-        rl_value: "500", // Rate limit: 100 emails
-        rl_frame: "d", // per hour (s=second, m=minute, h=hour, d=day)
-        backupmx: "0", // Not a backup MX (0 = no, 1 = yes)
-        relay_all_recipients: "0", // Relay all recipients (1 = yes, 0 = no)
-        restart_sogo: "1", // Restart SOGo after adding (1 = yes, 0 = no)
+        mailboxes: "100", // Increased to 100 mailboxes
+        defquota: "1024", // Set default to 1GB (1024MB)
+        maxquota: "1024", // Set max per mailbox to 1GB
+        quota: "102400", // Total domain quota: 100 * 1024 = 102,400MB
+        active: "1",
+        rl_value: "500",
+        rl_frame: "d",
+        backupmx: "0",
+        relay_all_recipients: "0",
+        restart_sogo: "1",
       },
       {
         headers: {

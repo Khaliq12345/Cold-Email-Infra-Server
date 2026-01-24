@@ -32,6 +32,17 @@ export const handler: Handlers["CreateServerJob"] = async (
 
   const planData = plans[plan];
   const serverName = `${username}-${plan}-${planData.location}`;
+
+  // Verify that the server is not created
+  const { data: initialData } = await supabase
+    .from("servers")
+    .select("server_name")
+    .eq("server_name", serverName);
+
+  if (initialData && initialData.length > 0) {
+    return;
+  }
+
   // Send the requests to create the server
   try {
     const response1 = await instance.get(`/v1/servers?name=${serverName}`);
@@ -40,6 +51,14 @@ export const handler: Handlers["CreateServerJob"] = async (
       const server = servers[0];
       logger.info("SERVER IS ALREADY CREATED");
       const server_id = server.id;
+      // Add server to the database
+      await supabase.from("servers").insert({
+        server_name: serverName,
+        domain: domain,
+        status: serverStatus.pending,
+        server_id: server_id,
+      });
+      logger.info("SERVER ADDED TO DB");
       return;
     }
     logger.info(`CREATING THE SERVER - ${planData}`);
@@ -63,6 +82,7 @@ export const handler: Handlers["CreateServerJob"] = async (
       status: serverStatus.pending,
       server_id: server_id,
     });
+    logger.info("SERVER ADDED TO DB");
     if (error1) {
       throw Error("Unable to insert into the database");
     }

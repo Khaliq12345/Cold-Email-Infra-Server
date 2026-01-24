@@ -35,7 +35,6 @@ export const handler: Handlers["ConfigureDKIMCron"] = async ({
     }
     // Loop through all fetched records
     for (const record of data) {
-      console.log(record);
       logger.info(`Processing record: ${record.domain}`);
       await emit({
         topic: "configure.dkim",

@@ -5,7 +5,7 @@ export const config: CronConfig = {
   type: "cron",
   name: "ConfigureDmarcCron",
   description: "Setup Dmarc if it is ready",
-  cron: "*/5 * * * *",
+  cron: "* * * * *",
   emits: ["configure.dmarc"],
   flows: ["ServerManagement"],
 };
