@@ -1,24 +1,12 @@
-services:
-  redis:
-    image: redis:7-alpine
-    container_name: motia-redis
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-    restart: unless-stopped
+version: "3.8"
 
-  motia:
-    build: .
-    container_name: motia-app
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "3006:3000"
-    environment:
-      - NODE_ENV=production
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-    depends_on:
-      redis:
-        condition: service_healthy
-    restart: "always"
+      - "3500:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
