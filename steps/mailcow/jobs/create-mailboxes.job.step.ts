@@ -101,7 +101,7 @@ export const handler: Handlers["CreateMailboxesJob"] = async (
             local_part: localpart,
             domain: domain,
             name: `${firstName} ${lastName}`,
-            quota: "2048",
+            quota: "1024",
             password: password,
             password2: password,
             active: "1",
